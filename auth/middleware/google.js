@@ -8,6 +8,7 @@ import {
 } from "../../utils/secrets.js";
 
 passport.use(
+  "google",
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,

@@ -11,7 +11,12 @@ const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOSTNAM
 const dbInit = async () => {
   await connect(MONGO_URI, {
     dbName: MONGO_DATABASE,
-  }).catch((error) => console.log(error));
+  }).catch((error) => {
+    console.log(error);
+
+    // Exit process with failure
+    process.exit(1);
+  });
   console.log("DB ready");
 };
 

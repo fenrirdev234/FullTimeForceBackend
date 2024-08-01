@@ -9,36 +9,30 @@ loginRouter.get(
     scope: ["email", "profile"],
   })
 );
-
-loginRouter.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-  });
-
-  req.session.destroy(function () {
-    res.clearCookie("connect.sid");
-    res.redirect("/");
-  });
-});
-
-/* loginRouter.get("/login", (req, res) => {
-  req.login(user, function (err) {
-    if (err) {
-      return next(err);
-    }
-    return res.redirect("/posts");
-  });
-}); */
-
 loginRouter.get(
   "/google/redirect",
   passport.authenticate("google", { failureRedirect: "/" }),
 
   (req, res) => {
-    req.session.destroy();
-
-    res.redirect("/posts");
+    res.redirect("/auth/login_check");
   }
 );
+
+loginRouter.get("/login_check", (req, res, next) => {
+  if (!req.user) {
+    throw new Error("User not authenticated");
+  }
+  res.json({ user: req.user });
+});
+
+loginRouter.get("/logout", (req, res, next) => {
+  res.clearCookie("connect.sid");
+  // clear the session cookie
+  req.logout(function (err) {
+    // logout of passport
+    req.session.destroy(function (err) {
+      // destroy the session
+      res.json({ message: "logged out" });
+    });
+  });
+});

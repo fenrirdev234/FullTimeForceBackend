@@ -15,8 +15,10 @@ const app = express();
 // Global Middleware
 app.use(express.json());
 
-/* app.use(express.urlencoded({extended: true})); */
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+//session configuration
 app.use(
   session({
     name: "connect.sid",
@@ -26,6 +28,8 @@ app.use(
     cookie: { maxAge: 60 * 60 * 1000 },
   })
 );
+
+//initialize passport.js with session
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -33,10 +37,18 @@ app.use(passport.session());
 app.get("/", (req, res) => {
   res.status(200).send("API is running");
 });
-
 app.use("/auth", loginRouter);
-
 app.use("/posts", postRouter);
+
+//Handle Errors
+app.use(function (error, req, res, next) {
+  res.status(error.status || 500).send({
+    error: {
+      status: error.status || 500,
+      message: error.message || "Internal Server Error",
+    },
+  });
+});
 
 dbInit().then();
 app.listen(PORT, () => {

@@ -1,5 +1,7 @@
 import express from "express";
 import passport from "passport";
+import { loginFailed, loginSuccess, logoutApp } from "./controller.js";
+import { FRONTEND_REDIRECT } from "../utils/secrets.js";
 
 export const loginRouter = express.Router();
 
@@ -11,28 +13,14 @@ loginRouter.get(
 );
 loginRouter.get(
   "/google/redirect",
-  passport.authenticate("google", { failureRedirect: "/" }),
-
-  (req, res) => {
-    res.redirect("/auth/login_check");
-  }
+  passport.authenticate("google", {
+    failureRedirect: "/login/failed",
+    successRedirect: FRONTEND_REDIRECT,
+  })
 );
 
-loginRouter.get("/login_check", (req, res, next) => {
-  if (!req.user) {
-    throw new Error("User not authenticated");
-  }
-  res.json({ user: req.user });
-});
+loginRouter.get("/login/success", loginSuccess);
 
-loginRouter.get("/logout", (req, res, next) => {
-  res.clearCookie("connect.sid");
-  // clear the session cookie
-  req.logout(function (err) {
-    // logout of passport
-    req.session.destroy(function (err) {
-      // destroy the session
-      res.json({ message: "logged out" });
-    });
-  });
-});
+loginRouter.get("/login/failed", loginFailed);
+
+loginRouter.get("/logout", logoutApp);

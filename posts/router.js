@@ -25,5 +25,5 @@ postRouter.get("/:permalink", getSpecifyPost);
 //Update
 postRouter.patch("/:permalink", ensureAuthenticated, modifyPost);
 
-//Update
+//Delete
 postRouter.delete("/:permalink", ensureAuthenticated, eliminatePost);

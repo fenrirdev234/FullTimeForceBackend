@@ -1,12 +1,5 @@
 import { FRONTEND_REDIRECT } from "../utils/secrets.js";
 
-/* export const loginChecker = (req, res, next) => {
-  if (!req.user) {
-    throw new Error("User not authenticated");
-  }
-  res.status(200).json({ user: req.user });
-}; */
-
 export const loginSuccess = (req, res) => {
   if (req.user) {
     res.status(200).json({
@@ -18,6 +11,7 @@ export const loginSuccess = (req, res) => {
   } else {
     res.status(200).json({
       success: false,
+      user: null,
       message: "required login first",
     });
   }
@@ -26,19 +20,31 @@ export const loginSuccess = (req, res) => {
 export const loginFailed = (req, res) => {
   res.status(401).json({
     success: false,
+    user: null,
     message: "failure",
   });
 };
 
-export const logoutApp = (req, res, next) => {
-  res.clearCookie("connect.sid");
-  // clear the session cookie
-  req.logout(function (err) {
-    // logout of passport
-    req.session.destroy(function (err) {
-      // destroy the session
-      res.json({ message: "logged out" });
+export const logoutApp = (req, res) => {
+  if (req.user) {
+    res.clearCookie("connect.sid");
+    // clear the session cookie
+    req.logout(function (err) {
+      // logout of passport
+      req.session.destroy(function (err) {
+        // destroy the session
+      });
     });
-  });
-  res.redirect(FRONTEND_REDIRECT);
+    return res.status(200).json({
+      success: true,
+      user: null,
+      message: "logging you out",
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      user: null,
+      message: "no user to log out!",
+    });
+  }
 };

@@ -12,15 +12,23 @@ loginRouter.get(
   })
 );
 loginRouter.get(
-  "/google/redirect",
+  "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login/failed",
-    successRedirect: FRONTEND_REDIRECT,
-  })
+    successRedirect: `${FRONTEND_REDIRECT}`,
+    keepSessionInfo: true,
+  }),
+  (err, req, res, next) => {
+    if (err) next(err);
+  }
+  /* (req, res) => {
+    
+    res.redirect(`${FRONTEND_REDIRECT}`);
+  } */
 );
 
 loginRouter.get("/login/success", loginSuccess);
 
 loginRouter.get("/login/failed", loginFailed);
 
-loginRouter.get("/logout", logoutApp);
+loginRouter.post("/logout", logoutApp);
